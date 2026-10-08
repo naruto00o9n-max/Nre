@@ -1,0 +1,16 @@
+{
+  "platforms": [
+    "android",
+    "apple"
+  ],
+  "android": {
+    "modules": [
+      "expo.modules.longimage.LongImageModule"
+    ]
+  },
+  "apple": {
+    "modules": [
+      "LongImageModule"
+    ]
+  }
+}
