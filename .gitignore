@@ -2,3 +2,4 @@ upstream
 app/
 build/
 __pycache__/
+trial/fonts/*.ttf

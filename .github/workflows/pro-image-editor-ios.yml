@@ -1,4 +1,4 @@
-name: Pro Image Editor unsigned IPA
+name: Manhwa Studio frosted iOS
 "on":
   push:
     branches: [pro-image-editor]
@@ -67,6 +67,57 @@ jobs:
             app/pubspec.lock
             app/pubspec.yaml
             app/lib/
+            app/test-output/
+            patches/
             upstream/LICENSE
           if-no-files-found: ignore
+          retention-days: 14
+  simulator:
+    needs: ios
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.4.1.app/Contents/Developer
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.x
+          cache: true
+      - name: Prepare source
+        run: |
+          git clone --depth 1 https://github.com/hm21/pro_image_editor.git upstream
+          git -C upstream fetch --depth 1 origin 8305f0f1d734c96fc3bfe1411e8104ec628753f7
+          git -C upstream checkout --detach 8305f0f1d734c96fc3bfe1411e8104ec628753f7
+          flutter config --no-enable-swift-package-manager
+          python3 scripts/prepare.py
+          flutter create --no-pub --platforms=ios,android --org com.manhwa --project-name proimageeditortrial app
+          python3 scripts/prepare.py
+          cd app
+          flutter pub get
+      - name: Boot iPhone simulator
+        id: phone
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '--json']))['devices']
+          phone = next(d for group in devices.values() for d in group if d['name'].startswith('iPhone'))
+          if phone['state'] != 'Booted':
+              subprocess.run(['xcrun', 'simctl', 'boot', phone['udid']], check=True)
+          subprocess.run(['xcrun', 'simctl', 'bootstatus', phone['udid'], '-b'], check=True)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f"device={phone['udid']}\n")
+          PY
+      - name: Test actual iOS canvas and project flows
+        run: |
+          set -o pipefail
+          mkdir -p build
+          cd app
+          flutter test integration_test/workspace_test.dart --no-pub -d '${{ steps.phone.outputs.device }}' --reporter expanded 2>&1 | tee ../build/ios-simulator.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-simulator-validation
+          path: build/ios-simulator.log
           retention-days: 14

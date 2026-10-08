@@ -1,11 +1,13 @@
 name: example
-description: Trial application using the official Pro Image Editor designs.
+description: Manhwa workspace built on the official Pro Image Editor frosted design.
 publish_to: none
-version: 1.0.0+1
+version: 0.2.0+2
 environment:
   sdk: '>=3.12.0 <4.0.0'
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
   pro_image_editor:
     path: ../upstream
@@ -17,6 +19,8 @@ dependencies:
   gal: ^2.3.2
   google_fonts: ^8.0.2
   image_picker: ^1.1.2
+  path_provider: ^2.1.5
+  share_plus: ^12.0.1
   intl: ^0.20.1
   mime: ^2.0.0
   flutter_colorpicker: ^1.1.0
@@ -24,11 +28,20 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^5.0.0
 flutter:
   uses-material-design: true
   assets:
     - assets/demo.png
     - assets/google_fonts/
+  fonts:
+    - family: NotoSansArabic
+      fonts:
+        - asset: assets/fonts/NotoSansArabic.ttf
+    - family: NotoNaskhArabic
+      fonts:
+        - asset: assets/fonts/NotoNaskhArabic.ttf
   config:
     enable-swift-package-manager: false
