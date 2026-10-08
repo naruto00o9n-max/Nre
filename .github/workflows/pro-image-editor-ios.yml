@@ -3,6 +3,11 @@ name: Manhwa Studio frosted iOS
   push:
     branches: [pro-image-editor]
   workflow_dispatch:
+    inputs:
+      simulator_only:
+        description: Test iOS simulator without rebuilding the release IPA
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -10,6 +15,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   ios:
+    if: ${{ !inputs.simulator_only && !contains(github.event.head_commit.message, '[simulator-only]') }}
     runs-on: macos-26
     timeout-minutes: 60
     steps:
@@ -74,6 +80,7 @@ jobs:
           retention-days: 14
   simulator:
     needs: ios
+    if: ${{ always() && !cancelled() && (needs.ios.result == 'success' || needs.ios.result == 'skipped') }}
     runs-on: macos-26
     timeout-minutes: 45
     steps:
@@ -110,6 +117,7 @@ jobs:
               output.write(f"device={phone['udid']}\n")
           PY
       - name: Test actual iOS canvas and project flows
+        timeout-minutes: 15
         run: |
           set -o pipefail
           mkdir -p build

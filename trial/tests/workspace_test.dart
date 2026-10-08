@@ -37,6 +37,9 @@ Future<void> loadFonts() async {
 }
 
 Future<void> snapshot(WidgetTester tester, String name) async {
+  // Native integration validates the editor's own PNG output. Review images
+  // are produced by the headless compositor, independent of a device surface.
+  if (Platform.isIOS || Platform.isAndroid) return;
   await tester.runAsync(() async {
     final render = tester.binding.renderViews.first;
     // The screenshot reads the test view's compositor layer for review artifacts.
@@ -53,6 +56,7 @@ Future<void> snapshot(WidgetTester tester, String name) async {
 
 void main() {
   testWidgets('home and nested gallery at phone width', (tester) async {
+    debugPrint('[workspace] home and gallery: start');
     tester.view.physicalSize = const Size(430, 932);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -70,6 +74,7 @@ void main() {
     });
     await tester.pumpWidget(StudioApp(library: library));
     await tester.pumpAndSettle();
+    debugPrint('[workspace] home rendered');
     await snapshot(tester, 'home');
     await tester.tap(find.text('معرض أعمالي'));
     await tester.pumpAndSettle();
@@ -82,10 +87,12 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.runAsync(() => directory.delete(recursive: true));
     library.dispose();
+    debugPrint('[workspace] home and gallery: complete');
   });
   testWidgets(
     '800 x 15000 canvas: pinch, text properties, layers, PNG export, reopen',
     (tester) async {
+      debugPrint('[workspace] long-image editor: start');
       tester.view.physicalSize = const Size(430, 932);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -104,6 +111,7 @@ void main() {
         await source.writeAsBytes(png);
         project = await library.importImage(source, 'صورة طويلة', null);
       });
+      debugPrint('[workspace] 800 x 15000 source imported');
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
@@ -128,6 +136,7 @@ void main() {
       final editor = tester.state<ProImageEditorState>(
         find.byType(ProImageEditor),
       );
+      debugPrint('[workspace] editor rendered');
       expect(editor.sizesManager.originalImageSize, const Size(800, 15000));
       final before = editor.interactiveViewer.currentState!.scaleFactor;
       final first = await tester.startGesture(
@@ -157,6 +166,7 @@ void main() {
       await tester.pumpAndSettle();
       // This exercises the actual patched rendering path, not merely the encoder.
       final baseline = await tester.runAsync(() => editor.captureEditorImage());
+      debugPrint('[workspace] baseline PNG captured');
       await tester.runAsync(() async {
         final codec = await ui.instantiateImageCodec(baseline!);
         final frame = await codec.getNextFrame();
