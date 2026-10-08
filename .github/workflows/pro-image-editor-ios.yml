@@ -106,6 +106,7 @@ jobs:
       - name: Boot iPhone simulator
         id: phone
         run: |
+          open -a Simulator
           python3 - <<'PY'
           import json, os, subprocess
           devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '--json']))['devices']
@@ -122,7 +123,7 @@ jobs:
           set -o pipefail
           mkdir -p build
           cd app
-          flutter test integration_test/workspace_test.dart --no-pub -d '${{ steps.phone.outputs.device }}' --reporter expanded 2>&1 | tee ../build/ios-simulator.log
+          flutter test integration_test/workspace_test.dart --no-pub -d '${{ steps.phone.outputs.device }}' --reporter expanded --verbose 2>&1 | tee ../build/ios-simulator.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
