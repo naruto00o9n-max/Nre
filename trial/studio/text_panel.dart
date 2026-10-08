@@ -133,6 +133,7 @@ class _TextPanelState extends State<TextPanel> {
           text: '',
           colorMode: LayerBackgroundMode.onlyColor,
           color: Colors.white,
+          background: Colors.transparent,
           maxTextWidth: 220,
           textStyle: const TextStyle(fontFamily: 'NotoSansArabic'),
           align: TextAlign.center,
@@ -225,6 +226,8 @@ class _TextPanelState extends State<TextPanel> {
                 FilledButton.icon(
                   onPressed: () {
                     layer.text = _text.text;
+                    if (layer.colorMode == LayerBackgroundMode.onlyColor)
+                      layer.background = Colors.transparent;
                     if (layer.text.trim().isNotEmpty) {
                       Navigator.pop(context, layer);
                     }
@@ -385,11 +388,12 @@ class _TextPanelState extends State<TextPanel> {
                     contentPadding: EdgeInsets.zero,
                     title: const Text('خلفية النص'),
                     value: layer.colorMode != LayerBackgroundMode.onlyColor,
-                    onChanged: (v) => setState(
-                      () => layer.colorMode = v
+                    onChanged: (v) => setState(() {
+                      layer.colorMode = v
                           ? LayerBackgroundMode.backgroundAndColor
-                          : LayerBackgroundMode.onlyColor,
-                    ),
+                          : LayerBackgroundMode.onlyColor;
+                      layer.background = v ? Colors.white : Colors.transparent;
+                    }),
                   ),
                   _slider(
                     'حجم الخط',

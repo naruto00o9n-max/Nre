@@ -227,6 +227,46 @@ void main() {
       await tester.tapAt(const Offset(200, 130));
       await tester.pumpAndSettle();
       await snapshot(tester, 'editor');
+      editor.clearLayerSelection();
+      await tester.pumpAndSettle();
+      final textOnlyPng = await tester.runAsync(
+        () => editor.captureEditorImage(),
+      );
+      await tester.runAsync(() async {
+        final codec = await ui.instantiateImageCodec(textOnlyPng!);
+        final frame = await codec.getNextFrame();
+        final pixels = (await frame.image.toByteData(
+          format: ui.ImageByteFormat.rawStraightRgba,
+        ))!.buffer.asUint8List();
+        int count = 0, left = 800, right = 0, top = 15000, bottom = 0;
+        for (int y = 0; y < 15000; y++) {
+          for (int x = 0; x < 800; x++) {
+            final i = (y * 800 + x) * 4;
+            if (pixels[i] != x % 256 ||
+                pixels[i + 1] != y % 256 ||
+                pixels[i + 2] != (x + y) % 256) {
+              count++;
+              if (x < left) {
+                left = x;
+              }
+              if (x > right) {
+                right = x;
+              }
+              if (y < top) {
+                top = y;
+              }
+              if (y > bottom) {
+                bottom = y;
+              }
+            }
+          }
+        }
+        // Glyphs must be visible without becoming an opaque background rectangle.
+        expect(count, greaterThan(100));
+        expect(count / ((right - left + 1) * (bottom - top + 1)), lessThan(.8));
+        frame.image.dispose();
+        codec.dispose();
+      });
       // A file-backed image layer must survive project saves and re-imports.
       final resource = 'projects/${project.id}/resources/overlay.png';
       await tester.runAsync(() async {

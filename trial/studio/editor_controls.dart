@@ -601,6 +601,7 @@ class WorkspaceTools extends StatelessWidget {
                 _zoom(),
                 textDirection: TextDirection.ltr,
                 style: const TextStyle(
+                  fontFamily: 'NotoSansArabic',
                   fontSize: 12,
                   fontFeatures: [FontFeature.tabularFigures()],
                 ),
