@@ -30,7 +30,7 @@ jobs:
       - run: bash tests/test-ios-core.sh
   ios:
     needs: verify
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
@@ -38,12 +38,12 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - name: Select installed stable Xcode
+      - name: Select Xcode required by Expo SDK 57
         shell: bash
         run: |
-          xcode="$(python3 -c 'from pathlib import Path; import re; a=[p for p in Path("/Applications").glob("Xcode_*.app") if "beta" not in p.name.lower()]; print(max(a, key=lambda p: tuple(map(int,re.findall(r"[0-9]+",p.name))), default=""))')"
-          if [[ -n "$xcode" ]]; then sudo xcode-select -s "$xcode/Contents/Developer"; fi
+          sudo xcode-select -s /Applications/Xcode_26.4.1.app/Contents/Developer
           xcodebuild -version
+          swift --version
           pod --version
       - run: npm ci
       - name: Validate Swift syntax
