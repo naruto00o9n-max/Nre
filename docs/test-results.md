@@ -27,4 +27,9 @@
 - نجحت ESLint وTypeScript واختبارات المشروع، و21 فحص Expo Doctor، وإنشاء حزمة Hermes لـiOS.
 - نجح توليد مشروع iOS وربط LongImageModule بواسطة Expo autolinking.
 - جُهّز workflow على macOS لبناء جهاز ARM64 غير موقّع وتغليف IPA والتحقق من إزالة التوقيع.
-- لم يُشغّل Xcode/Swift أو Action حتى الآن: رفض GitHub إنشاء المستودع في حساب mourad-sat بخطأ HTTP 403، Resource not accessible by integration. يتطلب الرفع مستودعًا فارغًا قابلًا للكتابة وصلاحية workflows/Actions. لم تُنتج IPA بعد.
+- رُفع المشروع إلى `naruto00o9n-max/Nre` بعد تفعيل الحساب الصحيح في اتصال GitHub.
+- نجح [GitHub Actions](https://github.com/naruto00o9n-max/Nre/actions/runs/37769992945) بالكامل: verify ثم iOS. جُمّع التطبيق على macOS 26 وXcode 26.4.1 مع تعطيل التوقيع.
+- نتج `manhwa-studio-unsigned.ipa` بحجم 8,515,278 بايت، مع JavaScript ووحدة LongImage الأصلية وتسعة ملفات Mach-O بمعمارية ARM64.
+- نجح التحقق المستقل محليًا من ZIP CRC وSHA-256 ومعرّف `com.manhwastudio.app` وغياب التواقيع وملفات provisioning؛ الحد الأدنى iOS 16.4.
+- SHA-256 للـIPA: `56f28f25d613cd1b5512ab9bfb59b70a6ae08a1a2b3e966334f8cd75285ab5c9`.
+- **لم يُثبت التطبيق أو يُشغّل على iPhone فعلي.** نجاح البناء واختبارات البكسلات لا يثبت تجربة الواجهة والإيماءات وتطابق ألوان UIKit على جهاز.
