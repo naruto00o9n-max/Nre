@@ -1,0 +1,34 @@
+name: example
+description: Trial application using the official Pro Image Editor designs.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: '>=3.12.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  pro_image_editor:
+    path: ../upstream
+  material_ui: ^1.1.1
+  cupertino_ui: ^1.0.2
+  bot_toast: ^4.1.0
+  file_picker: 10.2.1
+  file_saver: ^0.3.1
+  gal: ^2.3.2
+  google_fonts: ^8.0.2
+  image_picker: ^1.1.2
+  intl: ^0.20.1
+  mime: ^2.0.0
+  flutter_colorpicker: ^1.1.0
+  vibration: ^3.1.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/demo.png
+    - assets/google_fonts/
+  config:
+    enable-swift-package-manager: false
